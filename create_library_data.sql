@@ -36,8 +36,6 @@ CREATE TABLE BORROWER (
   Ssn           CHAR(9) NOT NULL UNIQUE, 
   BName         VARCHAR(50) NOT NULL,
   Address       VARCHAR(100) NOT NULL,
-  City          VARCHAR(50) NOT NULL,
-  State         CHAR(2) NOT NULL,
   Phone         CHAR(14) NOT NULL,
   CONSTRAINT pk_borrower PRIMARY KEY (Card_id)
 );
