@@ -1,4 +1,4 @@
-# File name: search_books_mysql.py
+# File name: search_books.py
 # Author: Arjun Vishal
 # Last Edit: 2025-04-03
 # Description: Implements 'Book Search and Availability' for Milestone 2 of the CS4347 Project.
