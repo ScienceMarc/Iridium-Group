@@ -10,9 +10,8 @@ def get_mysql_connection():
     return mysql.connector.connect(
         host='localhost',
         user='root',
-        password='12345678',
-        database='LIBRARY_SYSTEMs',
-        port=3306
+        password='',
+        database='LIBRARY_SYSTEMs'
     )
 
 # Search for books
