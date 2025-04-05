@@ -7,7 +7,8 @@
     - Install the `mysql-connector` Python library
 
 2. **Set Up the Database**:
-    - Run the `create_library_data.sql` script to create the necessary database and tables
+    - Run the `create_library_data.sql` script in MySQL to create the necessary database and tables
+      ``` SOURCE create_library_data.sql; ```
 
 3. **Import Data**:
     - Execute the `import_data.py` script to load the CSV files from Milestone 1 into the database:
