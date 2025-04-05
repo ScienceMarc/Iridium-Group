@@ -18,7 +18,7 @@ def update_fines():
 
     today = date.today()
 
-    cursor.execute("SELECT Loan_id, Due_date, Date_in FROM BOOK_LOANS")
+    cursor.execute("SELECT Loan_id, Date_due, Date_in FROM BOOK_LOANS")
     for loan_id, due_date, date_in in cursor.fetchall():
         late_days = 0
         if date_in:
