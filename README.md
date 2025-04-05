@@ -32,5 +32,5 @@
         - ``` python3 borrower_management.py ```
 
       - **Fines**:
-        - You can modify the search criteria by inserting the keyword in line 48 of the code then execute the `fines.py` script.
+        - Execute the `fines.py` script.
         - ``` python3 fines.py ```
