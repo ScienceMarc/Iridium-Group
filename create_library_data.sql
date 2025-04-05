@@ -36,8 +36,6 @@ CREATE TABLE BORROWER (
   Ssn           CHAR(9) NOT NULL UNIQUE, 
   BName         VARCHAR(50) NOT NULL,
   Address       VARCHAR(100) NOT NULL,
-  City          VARCHAR(50) NOT NULL,
-  State         CHAR(2) NOT NULL,
   Phone         CHAR(14) NOT NULL,
   CONSTRAINT pk_borrower PRIMARY KEY (Card_id)
 );
@@ -74,10 +72,20 @@ CREATE TABLE FINES (
 );
 
 
+-- Add a book
+INSERT INTO BOOK (Isbn, Title) VALUES ('1234567890', 'Sample Book');
 
+-- Add an author
+INSERT INTO AUTHORS (Author_id, Name) VALUES (1, 'Jane Doe');
 
+-- Link author to book
+INSERT INTO BOOK_AUTHORS (Isbn, Author_id) VALUES ('1234567890', 1);
 
+-- Add a borrower
+INSERT INTO BORROWER (Card_id, Ssn, BName, Address, Phone)
+VALUES ('00000001', '123456789', 'John Smith', '123 Library Ln, Austin, TX', '555-123-4567');
 
-
-
-
+-- Create a loan that's overdue and not returned yet
+-- (Date_due is 10 days ago, Date_in is NULL)
+INSERT INTO BOOK_LOANS (Isbn, Card_id, Date_out, Date_due, Date_in)
+VALUES ('1234567890', '00000001', CURDATE() - INTERVAL 20 DAY, CURDATE() - INTERVAL 10 DAY, NULL);
