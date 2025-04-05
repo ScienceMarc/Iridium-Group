@@ -6,31 +6,19 @@
     - Ensure you have **MySQL** and **Python 3** installed on your system.
     - Install the `mysql-connector` Python library
 
-2. **Set Up the Database**:
-    - Run the `create_library_data.sql` script in MySQL to create the necessary database and tables
-    - ``` SOURCE create_library_data.sql; ```
+2. **Run Script**:
+    - Run `script.sh` and all the relevant files for this milestone will run. 
+    - It will:
+    1. Create the database
+    2. Import CSV data from Milestone1
+    3. Create a Borrower (Nick Halden)
+    4. Search the database for "Nigel Williams"
+    5. Checks out a book "Jetzt Will Ich's Wirklich Wissen" for "Nick Halden"
+    6. Searches loans by Loan ID (uses Nick Halden's ID)
+    7. Checks in the recently checked out book
+    8. Update Fines (book_loans file)
+    9. Update Fines (fines file)
+    10. List a dummy Borrower's fines
 
-3. **Import Data**:
-    - Execute the `import_data.py` script to load the CSV files from Milestone 1 into the database:
-    - ``` python3 import_data.py ```
-
-4. **Run Requirements**:
-    - After setting up, you can execute the following features in any order:
-      - **Book Search and Availability**:
-        - You can modify the search criteria by inserting the keyword in line 48 of the code then execute the `search_books.py` script.
-        - If nothing is changed, a search with the keyword "will" shall be executed.
-        - ``` python3 search_books.py ```
-
-      - **Book Loans**:
-        - You can modify the search criteria by inserting the keyword in line 48 of the code then execute the `book_loans.py` script.
-        - ``` python3 book_loans.py ```
-
-      - **Borrower Management**:
-        - You can modify the borrower information by modifying the information in lines 53-56 of the code then execute the `borrower_management.py` script.
-        - If nothing is changed, borrower "Nick Halden" will be created.
-        - After creation, the script can be run again to view the error message if a borrower with the same SSN were to be added.
-        - ``` python3 borrower_management.py ```
-
-      - **Fines**:
-        - Execute the `fines.py` script.
-        - ``` python3 fines.py ```
+    Execute using:
+    - ``` bash script.sh ```

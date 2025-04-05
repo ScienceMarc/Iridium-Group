@@ -140,7 +140,7 @@ def update_fines():
 
 # Testing the checkout and check-in functionality:
 if __name__ == "__main__":
-    print(checkout_book("123456789", "C0000001"))
-    print(search_loans("C0000001"))  # Search by Card ID
-    print(checkin_book(1))  # Provide actual Loan ID for check-in
+    print(checkout_book("3478088534", "ID001001"))
+    print(search_loans("ID001001"))  # Search by Card ID
+    print(checkin_book(2))  # Provide actual Loan ID for check-in
     update_fines()
