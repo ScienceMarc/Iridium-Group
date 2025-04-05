@@ -12,10 +12,10 @@ def create_borrower(ssn, bname, address, phone):
     try:
         # Connect to the database
         connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="LIBRARY_SYSTEM"
+            host='localhost',
+            user='root',
+            password='',
+            database='LIBRARY_SYSTEM',
         )
         cursor = connection.cursor()
 
