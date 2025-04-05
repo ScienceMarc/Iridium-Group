@@ -45,4 +45,4 @@ def search_books_mysql(search_term):
     cursor.close()
     connect.close()
 
-search_books_mysql("  ")  # type here to search
+search_books_mysql("will")  # type here to search
