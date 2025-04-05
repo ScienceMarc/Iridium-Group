@@ -11,7 +11,7 @@ def get_mysql_connection():
         host='localhost',
         user='root',
         password='',
-        database='LIBRARY_SYSTEMs'
+        database='LIBRARY_SYSTEM'
     )
 
 # Search for books
