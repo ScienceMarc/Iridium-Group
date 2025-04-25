@@ -1,0 +1,20 @@
+{% extends 'libraryapp/base.html' %}
+
+{% block title %}Home - Library Management System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3 text-center">
+        <h1 class="mb-4">Welcome to the Library Management System</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'search_books' %}" class="btn btn-primary">Search Books</a>
+                    <a href="{% url 'manage_fines' %}" class="btn btn-secondary">Manage Fines</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,67 @@
+{% extends 'libraryapp/base.html' %}
+
+{% block title %}Manage Fines - Library Management System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2 class="mb-4">Manage Fines</h2>
+        
+        <form method="get" class="search-form">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search by borrower ID or name..." value="{{ query }}">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+
+        {% if fines %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Borrower</th>
+                            <th>Book</th>
+                            <th>Due Date</th>
+                            <th>Return Date</th>
+                            <th>Fine Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fine in fines %}
+                            <tr>
+                                <td>{{ fine.loan.borrower.fname }} {{ fine.loan.borrower.lname }} ({{ fine.loan.borrower.card_no }})</td>
+                                <td>{{ fine.loan.book.title }}</td>
+                                <td>{{ fine.loan.due_date }}</td>
+                                <td>{{ fine.loan.date_in|default:"Not returned" }}</td>
+                                <td>${{ fine.fine_amt }}</td>
+                                <td>
+                                    {% if fine.paid %}
+                                        <span class="badge bg-success">Paid</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Unpaid</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not fine.paid and fine.loan.date_in %}
+                                        <form method="post" action="{% url 'pay_fine' %}" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="fine_id" value="{{ fine.id }}">
+                                            <button type="submit" class="btn btn-sm btn-success">Pay Fine</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% elif query %}
+            <div class="alert alert-info">
+                No fines found matching your search criteria.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
