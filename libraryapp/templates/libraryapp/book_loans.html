@@ -1,0 +1,91 @@
+{% extends 'libraryapp/base.html' %}
+
+{% block title %}Book Loans{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Book Loans</h2>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Check Out Book</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="checkout">
+                        <div class="mb-3">
+                            <label for="isbn" class="form-label">ISBN</label>
+                            <input type="text" class="form-control" id="isbn" name="isbn" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="card_no" class="form-label">Borrower Card Number</label>
+                            <input type="text" class="form-control" id="card_no" name="card_no" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Check Out</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Check In Book</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="checkin">
+                        <div class="mb-3">
+                            <label for="checkin_isbn" class="form-label">ISBN</label>
+                            <input type="text" class="form-control" id="checkin_isbn" name="isbn" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Check In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h4>Active Loans</h4>
+            <form method="get" class="d-flex mt-2">
+                <input type="text" name="q" class="form-control me-2" placeholder="Search by ISBN, Card Number, or Borrower Name..." value="{{ search_query }}">
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </form>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Loan ID</th>
+                            <th>Book Title</th>
+                            <th>Borrower</th>
+                            <th>Due Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for loan in active_loans %}
+                            <tr>
+                                <td>{{ loan.loan_id }}</td>
+                                <td>{{ loan.book.title }}</td>
+                                <td>{{ loan.borrower.fname }} {{ loan.borrower.lname }}</td>
+                                <td>{{ loan.due_date }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No active loans</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

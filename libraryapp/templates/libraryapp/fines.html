@@ -1,0 +1,90 @@
+{% extends 'libraryapp/base.html' %}
+
+{% block title %}Fines{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Fines Management</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form method="get" class="d-flex">
+                <input type="text" name="q" class="form-control me-2" placeholder="Search by Borrower ID or Name..." value="{{ search_query }}">
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </form>
+        </div>
+        <div class="col-md-4 text-end">
+            <form method="get" style="display:inline;">
+                <input type="hidden" name="q" value="{{ search_query }}">
+                <input type="hidden" name="show_all" value="{% if not show_all %}1{% else %}0{% endif %}">
+                <button type="submit" class="btn btn-outline-secondary">
+                    {% if not show_all %}Show All Fines{% else %}Show Only Unpaid{% endif %}
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_fines">
+                <button type="submit" class="btn btn-primary">Update Fines</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h4>Fines Summary</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Borrower ID</th>
+                            <th>Borrower</th>
+                            {% if show_all %}
+                                <th>Total Unpaid</th>
+                                <th>Total Paid</th>
+                            {% else %}
+                                <th>Total Unpaid</th>
+                            {% endif %}
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fine in fines %}
+                            <tr>
+                                <td>{{ fine.loan__borrower__card_no }}</td>
+                                <td>{{ fine.loan__borrower__fname }} {{ fine.loan__borrower__lname }}</td>
+                                <td>${{ fine.total_unpaid|default:'0.00' }}</td>
+                                {% if show_all %}
+                                    <td>${{ fine.total_paid|default:'0.00' }}</td>
+                                {% endif %}
+                                <td>
+                                    {% if not show_all and fine.can_pay %}
+                                        <form method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="pay_fine">
+                                            <input type="hidden" name="fine_id" value="{{ fine.loan__borrower__card_no }}">
+                                            <button type="submit" class="btn btn-success btn-sm">Pay All</button>
+                                        </form>
+                                    {% elif not show_all and fine.total_unpaid > 0 %}
+                                        <span class="text-muted">Return all late books to pay</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No fines to display</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

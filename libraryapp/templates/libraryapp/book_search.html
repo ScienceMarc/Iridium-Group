@@ -1,0 +1,114 @@
+{% extends 'libraryapp/base.html' %}
+
+{% block title %}Book Search{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Book Search</h2>
+    
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search by title, ISBN, or author..." value="{{ query }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+    
+    {% if books %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ISBN</th>
+                        <th>Title</th>
+                        <th>Authors</th>
+                        <th>Availability</th>
+                        <th>Borrower ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        <tr>
+                            <td>{{ book.isbn }}</td>
+                            <td>{{ book.title }}</td>
+                            <td>
+                                {% for author in book.authors.all %}
+                                    {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if book.is_checked_out %}
+                                    <span class="text-danger">Checked Out</span>
+                                {% else %}
+                                    <span class="text-success">Available</span>
+                                    <!-- Check Out Button -->
+                                    <button class="btn btn-sm btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#checkoutModal" data-isbn="{{ book.isbn }}" data-title="{{ book.title }}">Check Out</button>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if book.borrower_id %}
+                                    {{ book.borrower_id }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% elif query %}
+        <div class="alert alert-info">
+            No books found matching your search criteria.
+        </div>
+    {% endif %}
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'book_loans' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="checkout">
+        <div class="modal-header">
+          <h5 class="modal-title" id="checkoutModalLabel">Check Out Book</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="modalIsbn" class="form-label">ISBN</label>
+            <input type="text" class="form-control" id="modalIsbn" name="isbn" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="modalTitle" class="form-label">Title</label>
+            <input type="text" class="form-control" id="modalTitle" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="modalCardNo" class="form-label">Borrower Card Number</label>
+            <input type="text" class="form-control" id="modalCardNo" name="card_no" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Check Out</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+var checkoutModal = document.getElementById('checkoutModal');
+checkoutModal.addEventListener('show.bs.modal', function (event) {
+  var button = event.relatedTarget;
+  var isbn = button.getAttribute('data-isbn');
+  var title = button.getAttribute('data-title');
+  var modalIsbn = checkoutModal.querySelector('#modalIsbn');
+  var modalTitle = checkoutModal.querySelector('#modalTitle');
+  modalIsbn.value = isbn;
+  modalTitle.value = title;
+});
+</script>
+{% endblock %}
+{% endblock %} 
