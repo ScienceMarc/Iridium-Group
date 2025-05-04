@@ -16,59 +16,69 @@ A Django-based web application for managing library operations including book se
 - MySQL Server
 - pip (Python package manager)
 
-## Installation
+## Setup & Running Instructions
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd library-management-system
+### 1. Clone the Repository
+```
+git clone <repo-url>
+cd Iridium-Group
 ```
 
-2. Create and activate a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+### 2. Set Up MySQL Database
+- You can use MySQL via Docker or a local installation.
+- Make sure your MySQL server is running and accessible.
+- Update `library_portal/settings.py` with your MySQL credentials if needed.
 
-3. Install dependencies:
-```bash
+#### **If using Docker:**
+- Start your MySQL container (example):
+  ```
+  docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=yourpassword -p 3306:3306 -d mysql:8
+  ```
+- You do **not** need MySQL Workbench open for the app to work (Workbench is optional for manual DB inspection).
+
+### 3. Set Up Python Environment
+```
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. Create a MySQL database named `LIBRARY_SYSTEM`:
-```sql
-CREATE DATABASE LIBRARY_SYSTEM;
+### 4. Run Migrations
 ```
-
-5. Update database settings in `library_portal/settings.py` with your MySQL credentials if needed.
-
-6. Run migrations:
-```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-7. Create a superuser (admin):
-```bash
-python manage.py createsuperuser
+### 5. Import Initial Data (Only Once)
 ```
+python import_data.py
+```
+- **Note:** You only need to import data if the database is empty or has been reset. You do NOT need to re-import every time you run the server.
 
-## Running the Application
+### 6. Run the Development Server
+```
+python manage.py runserver 8001
+```
+- Visit [http://127.0.0.1:8001/](http://127.0.0.1:8001/) in your browser.
 
-1. Start the development server:
-```bash
-python manage.py runserver
-```
+### 7. Using the App
+- **Book Search:** Search by ISBN, title, or author. See availability and borrower info.
+- **Book Loans:** Check out/in books by ISBN and borrower card number. Search/filter active loans.
+- **Borrower Management:** Add new borrowers. SSN must be unique. Card numbers are auto-generated.
+- **Fines:** Update, search, and pay fines. Fines are grouped by borrower. Only pay if all late books are returned. Toggle to view paid/unpaid fines.
 
-2. Open your web browser and navigate to:
-```
-http://localhost:8000
-```
+### 8. Admin Access (Optional)
+- Create a superuser for Django admin:
+  ```
+  python manage.py createsuperuser
+  ```
+- Visit [http://127.0.0.1:8001/admin/](http://127.0.0.1:8001/admin/)
 
-3. For admin access, go to:
-```
-http://localhost:8000/admin
-```
+---
+
+**Data is persistent as long as your MySQL database is not reset or deleted.**
+
+If you have any issues, check your MySQL connection, Docker container, or reach out for help!
 
 ## Usage
 
