@@ -11,12 +11,16 @@
             <h4>Add New Borrower</h4>
         </div>
         <div class="card-body">
-            <form method="post">
+            <form method="post" id="borrowerForm">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="ssn" class="form-label">SSN</label>
-                        <input type="text" class="form-control" id="ssn" name="ssn" required>
+                        <input type="text" class="form-control" id="ssn" name="ssn" required 
+                               pattern="[0-9]{9}" 
+                               title="Please enter exactly 9 digits (no dashes or spaces)"
+                               placeholder="Enter 9 digits only">
+                        <div class="form-text text-muted">Enter exactly 9 digits (no dashes or spaces)</div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="fname" class="form-label">First Name</label>
@@ -42,4 +46,19 @@
         </div>
     </div>
 </div>
+
+{% block extra_js %}
+<script>
+document.getElementById('borrowerForm').addEventListener('submit', function(e) {
+    var ssnInput = document.getElementById('ssn');
+    var ssnValue = ssnInput.value.replace(/[^0-9]/g, '');
+    if (ssnValue.length !== 9) {
+        e.preventDefault();
+        alert('SSN must be exactly 9 digits (no dashes or spaces)');
+        ssnInput.focus();
+    }
+});
+</script>
+{% endblock %}
+
 {% endblock %} 
