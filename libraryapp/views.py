@@ -73,6 +73,65 @@ def book_loans(request):
             except (Book.DoesNotExist, Borrower.DoesNotExist):
                 messages.error(request, 'Invalid ISBN or borrower card number.')
         
+        elif action == 'bulk_checkout':
+            selected_books = request.POST.getlist('selected_books')
+            card_no = request.POST.get('card_no')
+            
+            if not selected_books:
+                messages.error(request, 'No books selected for checkout.')
+                return redirect('book_search')
+            
+            try:
+                borrower = Borrower.objects.get(card_no=card_no)
+                
+                # Check if borrower has unpaid fines
+                if Fine.objects.filter(loan__borrower=borrower, paid=False).exists():
+                    messages.error(request, 'Borrower has unpaid fines and cannot check out books.')
+                    return redirect('book_search')
+                
+                # Check if borrower has reached limit
+                active_loans = BookLoan.objects.filter(borrower=borrower, date_in__isnull=True).count()
+                remaining_slots = 3 - active_loans
+                
+                if remaining_slots <= 0:
+                    messages.error(request, 'Borrower has reached the maximum number of active loans (3).')
+                    return redirect('book_search')
+                
+                # Limit the number of books to checkout based on remaining slots
+                books_to_checkout = selected_books[:remaining_slots]
+                
+                success_count = 0
+                error_messages = []
+                
+                for isbn in books_to_checkout:
+                    try:
+                        book = Book.objects.get(isbn=isbn)
+                        
+                        # Check if book is available
+                        if BookLoan.objects.filter(book=book, date_in__isnull=True).exists():
+                            error_messages.append(f'Book "{book.title}" is already checked out.')
+                            continue
+                        
+                        # Create new loan
+                        BookLoan.objects.create(
+                            book=book,
+                            borrower=borrower,
+                            due_date=timezone.now().date() + timedelta(days=14)
+                        )
+                        success_count += 1
+                        
+                    except Book.DoesNotExist:
+                        error_messages.append(f'Book with ISBN {isbn} not found.')
+                
+                if success_count > 0:
+                    messages.success(request, f'Successfully checked out {success_count} book(s).')
+                if error_messages:
+                    for error in error_messages:
+                        messages.error(request, error)
+                
+            except Borrower.DoesNotExist:
+                messages.error(request, 'Invalid borrower card number.')
+        
         elif action == 'checkin':
             isbn = request.POST.get('isbn')
             try:
