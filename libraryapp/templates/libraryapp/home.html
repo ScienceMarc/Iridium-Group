@@ -1,0 +1,54 @@
+{% extends 'libraryapp/base.html' %}
+
+{% block title %}Library Management System{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Welcome to the Library Management System</h1>
+        <p class="lead">Manage your library's books, borrowers, loans, and fines efficiently.</p>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Book Search</h5>
+                    <p class="card-text">Search for books by title, ISBN, or author.</p>
+                    <a href="{% url 'book_search' %}" class="btn btn-primary">Search Books</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Book Loans</h5>
+                    <p class="card-text">Manage book checkouts and returns.</p>
+                    <a href="{% url 'book_loans' %}" class="btn btn-primary">Manage Loans</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Borrower Management</h5>
+                    <p class="card-text">Add and manage library borrowers.</p>
+                    <a href="{% url 'borrower_management' %}" class="btn btn-primary">Manage Borrowers</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Fines</h5>
+                    <p class="card-text">View and manage overdue fines.</p>
+                    <a href="{% url 'fines' %}" class="btn btn-primary">Manage Fines</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

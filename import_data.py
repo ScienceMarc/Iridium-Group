@@ -1,55 +1,80 @@
 import csv
 import os
-import mysql.connector
+import django
+import sys
 
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="LIBRARY_SYSTEM",
-)
-cursor = conn.cursor()
+# Add the project directory to the Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-base_path = 'milestone1'
+# Set up Django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'library_portal.settings')
+django.setup()
+
+from libraryapp.models import Book, Author, Borrower
 
 def load_books():
-    with open(os.path.join(base_path, 'book.csv'), newline='', encoding='utf-8') as f:
+    with open(os.path.join('milestone1', 'book.csv'), newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            cursor.execute("INSERT IGNORE INTO BOOK (Isbn, Title) VALUES (%s, %s)", (row['Isbn'].strip(), row['Title'].strip()))
+            Book.objects.get_or_create(
+                isbn=row['Isbn'].strip(),
+                title=row['Title'].strip()
+            )
 
 def load_authors():
-    with open(os.path.join(base_path, 'authors.csv'), newline='', encoding='utf-8') as f:
+    with open(os.path.join('milestone1', 'authors.csv'), newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            cursor.execute("INSERT IGNORE INTO AUTHORS (Author_id, Name) VALUES (%s, %s)", (row['Author_id'].strip(), row['Name'].strip()))
+            name = row['Name'].strip()
+            if not name:
+                print(f"Skipping row with empty name: {row}")
+                continue  # Skip rows with empty names
+            Author.objects.get_or_create(name=name)
 
 def load_book_authors():
-    with open(os.path.join(base_path, 'book_authors.csv'), newline='', encoding='utf-8') as f:
+    # Build a mapping from Author_id to author name
+    author_id_to_name = {}
+    with open(os.path.join('milestone1', 'authors.csv'), newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            cursor.execute("INSERT IGNORE INTO BOOK_AUTHORS (Isbn, Author_id) VALUES (%s, %s)", (row['Isbn'].strip(), row['Author_id'].strip()))
+            author_id_to_name[row['Author_id'].strip()] = row['Name'].strip()
+
+    with open(os.path.join('milestone1', 'book_authors.csv'), newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            try:
+                book = Book.objects.get(isbn=row['Isbn'].strip())
+                author_name = author_id_to_name.get(row['Author_id'].strip())
+                if not author_name:
+                    print(f"Author_id {row['Author_id']} not found in authors.csv")
+                    continue
+                author = Author.objects.get(name=author_name)
+                book.authors.add(author)
+            except (Book.DoesNotExist, Author.DoesNotExist) as e:
+                print(f"Error linking book and author: {e}")
 
 def load_borrowers():
-    with open(os.path.join(base_path, 'borrower.csv'), newline='', encoding='utf-8') as f:
+    with open(os.path.join('milestone1', 'borrower.csv'), newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            cursor.execute("""
-                INSERT IGNORE INTO BORROWER (Card_id, Bname, Address, Phone, Ssn)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (
-                row['Card_id'].strip(),
-                row['Bname'].strip(),
-                row['Address'].strip(),
-                row['Phone'].strip(),
-                row['Ssn'].strip()
-            ))
+            print(row)  # Debug: show the row being processed
+            ssn = row['Ssn'].replace('-', '').strip()
+            Borrower.objects.get_or_create(
+                card_no=row['Card_id'].strip(),
+                ssn=ssn,
+                fname=row['Bname'].strip().split()[0],
+                lname=' '.join(row['Bname'].strip().split()[1:]),
+                address=row['Address'].strip(),
+                phone=row['Phone'].strip()
+            )
 
 if __name__ == "__main__":
+    print("Loading books...")
     load_books()
+    print("Loading authors...")
     load_authors()
+    print("Loading book authors...")
     load_book_authors()
+    print("Loading borrowers...")
     load_borrowers()
-    conn.commit()
-    conn.close()
-    print("✅ MySQL data successfully imported from CSVs!")
+    print("✅ Data successfully imported!")
